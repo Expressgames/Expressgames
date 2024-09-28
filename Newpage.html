@@ -1,0 +1,130 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Detection</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .container {
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+            border-radius: 20px;
+            background: #f1f1f1;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #000;
+        }
+        .message {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #e9e9e9;
+            transition: all 0.3s;
+        }
+        .button {
+            background-color: #000;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+            margin-top: 20px;
+        }
+        .button:hover {
+            background-color: #333;
+            transform: scale(1.05);
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+        .popup.show {
+            display: block;
+        }
+        .copy-button {
+            background-color: #000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Device Compatibility Check</h1>
+        <div class="message" id="message"></div>
+        <button class="button" id="confirmButton" style="display:none;">Confirm Register</button>
+    </div>
+
+    <div class="popup" id="popup">
+        <h2>Your Code</h2>
+        <p id="code">6181036519</p>
+        <button class="copy-button" onclick="copyCode()">Copy Code</button>
+        <button class="button" onclick="closePopup()">Close</button>
+    </div>
+
+    <script>
+        function detectDevice() {
+            const messageElement = document.getElementById('message');
+            const confirmButton = document.getElementById('confirmButton');
+
+            const userAgent = navigator.userAgent.toLowerCase();
+            if (/iphone|ipad|ipod/.test(userAgent)) {
+                const model = userAgent.match(/iphone|ipad|ipod/i)[0].toUpperCase();
+                messageElement.textContent = `You are using an ${model}.`;
+                confirmButton.style.display = 'block';
+                confirmButton.onclick = showPopup;
+            } else {
+                messageElement.textContent = 'Sorry, your device is not compatible. Early register now.';
+                confirmButton.style.display = 'none';
+            }
+        }
+
+        function showPopup() {
+            document.getElementById('popup').classList.add('show');
+        }
+
+        function closePopup() {
+            document.getElementById('popup').classList.remove('show');
+        }
+
+        function copyCode() {
+            const code = document.getElementById('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Code copied to clipboard!');
+            });
+        }
+
+        window.onload = detectDevice;
+    </script>
+</body>
+</html>
