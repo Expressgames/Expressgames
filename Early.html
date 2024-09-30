@@ -1,0 +1,180 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Pre-launch Registration - iOS Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            background-color: #f0f0f5;
+            color: #333;
+        }
+        /* Header */
+        .header {
+            background-color: #fff;
+            padding: 20px 40px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #0070c9;
+            letter-spacing: 1.2px;
+        }
+        /* Content */
+        .content {
+            text-align: center;
+            padding: 60px 20px;
+            background-color: #fff;
+        }
+        .content h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        .content p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            color: #666;
+        }
+        .form-container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .redeem-btn, .payment-btn {
+            background: linear-gradient(135deg, #007aff, #34d1f5);
+            color: white;
+            font-size: 1.2rem;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .redeem-btn:hover, .payment-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            border: 2px solid #007aff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .popup p {
+            font-size: 1.2rem;
+            color: #333;
+        }
+        .popup-btn {
+            background-color: #007aff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>iOS Panel - Pre-launch</h1>
+    </div>
+
+    <!-- Content Section -->
+    <div class="content">
+        <h2>This application is not launched yet</h2>
+        <p>But it will be soon available from <strong>16th, 17th, and 18th October 2024</strong></p>
+    </div>
+
+    <!-- Complete Payment Button -->
+    <div class="form-container">
+        <button class="payment-btn" id="complete-payment">Complete Payment</button>
+    </div>
+
+    <!-- Redeem Code Section -->
+    <div class="form-container" style="margin-top: 40px;">
+        <h3>Redeem Code</h3>
+        <form id="redeem-form">
+            <label for="redeem-code">Enter Redeem Code:</label>
+            <input type="text" id="redeem-code" placeholder="Enter redeem code" required>
+            <button type="button" class="redeem-btn" id="redeem-btn">Redeem Code</button>
+        </form>
+    </div>
+
+    <!-- Popup for OTP result -->
+    <div class="popup" id="popup">
+        <p id="popup-message"></p>
+        <button class="popup-btn" onclick="closePopup()">OK</button>
+    </div>
+
+    <script>
+        const redeemBtn = document.getElementById('redeem-btn');
+        const completePaymentBtn = document.getElementById('complete-payment');
+        const popup = document.getElementById('popup');
+        const popupMessage = document.getElementById('popup-message');
+        
+        // Hardcoded redeem code
+        const redeemCode = "JK80L29582V71RT910";
+
+        // Redeem Code button click handler
+        redeemBtn.addEventListener('click', function() {
+            const enteredCode = document.getElementById('redeem-code').value;
+            if (enteredCode === redeemCode) {
+                window.location.href = "complete.html";
+            } else {
+                showPopup('Incorrect redeem code.');
+            }
+        });
+
+        // Complete Payment button click handler
+        completePaymentBtn.addEventListener('click', function() {
+            window.location.href = "ahead.html";
+        });
+
+        // Function to show popup
+        function showPopup(message) {
+            popupMessage.textContent = message;
+            popup.style.display = 'block';
+        }
+
+        // Function to close popup
+        function closePopup() {
+            popup.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

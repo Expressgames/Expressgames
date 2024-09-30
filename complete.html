@@ -1,0 +1,129 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Device Compatibility Check</title>
+    <style>
+        /* Base Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            color: #333;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            width: 400px;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: #d9534f;
+            margin-bottom: 20px;
+            font-weight: bold;
+            animation: slideInDown 0.6s ease-in-out;
+        }
+
+        p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            color: #666;
+            animation: slideInDown 0.8s ease-in-out;
+        }
+
+        .try-again {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #ff5a5f, #fc4a4d);
+            color: white;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: pulse 1.2s infinite ease-in-out;
+            cursor: pointer;
+        }
+
+        .try-again:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInDown {
+            0% {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="android-message">
+        <h1>Android Not Supported</h1>
+        <p>Sorry, your device is not compatible with this system. Please try again using an iPhone.</p>
+        <button class="try-again" onclick="window.location.reload()">Try Again</button>
+    </div>
+
+    <script>
+        // Detect device
+        const userAgent = navigator.userAgent.toLowerCase();
+        const isIphone = /iphone|ipad|ipod/.test(userAgent);
+        const isAndroid = /android/.test(userAgent);
+
+        // Redirect iPhone users to complete.html
+        if (isIphone) {
+            window.location.href = 'main.html';
+        }
+
+        // Show Android message
+        if (isAndroid) {
+            document.getElementById('android-message').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

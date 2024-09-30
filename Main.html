@@ -1,0 +1,254 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Complete Registration - iOS Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            background-color: #f0f0f5;
+            color: #333;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            padding: 20px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        /* Image on the right */
+        .image-container {
+            flex: 1;
+            padding: 20px;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        /* Left content */
+        .left-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+        .left-content h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        /* Progress section */
+        .progress {
+            position: relative;
+            margin-bottom: 20px;
+            width: 100%;
+            height: 10px;
+            background: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(135deg, #007aff, #34d1f5);
+            transition: width 0.2s ease;
+        }
+        .progress-percentage {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #007aff;
+        }
+        .progress-message {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        /* Register button */
+        .register-btn {
+            width: 150px;
+            padding: 10px;
+            background: grey;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            cursor: not-allowed;
+            opacity: 0.6;
+            transition: opacity 0.5s ease, background 0.5s ease;
+            align-self: flex-end;
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+        }
+        .register-btn.enabled {
+            background: linear-gradient(135deg, #007aff, #34d1f5);
+            cursor: pointer;
+            opacity: 1;
+        }
+        /* Popup */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+        .popup h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        .popup p {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+        .popup .copy-btn {
+            background: linear-gradient(135deg, #007aff, #34d1f5);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: transform 0.4s ease;
+        }
+        .popup .copy-btn:hover {
+            transform: scale(1.05);
+        }
+        .popup .close-btn {
+            background-color: #ff3b30;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        /* Popup Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Left Content with Progress and Button -->
+        <div class="left-content">
+            <div class="progress-percentage" id="progress-percentage">1%</div>
+            <div class="progress-message" id="progress-message">Starting</div>
+            <div class="progress">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <button class="register-btn" id="register-btn" disabled>Register</button>
+        </div>
+        
+        <!-- Right Side Image -->
+        <div class="image-container">
+            <img src="img.jpg" alt="Product Image">
+        </div>
+    </div>
+
+    <!-- Popup -->
+    <div class="popup" id="popup">
+        <h3>Registration Code</h3>
+        <p id="registration-code">6728252552720</p>
+        <button class="copy-btn" id="copy-btn">Copy Code</button><br>
+        <button class="close-btn" id="close-btn">Close</button>
+    </div>
+
+    <script>
+        // Elements
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercentage = document.getElementById('progress-percentage');
+        const progressMessage = document.getElementById('progress-message');
+        const registerBtn = document.getElementById('register-btn');
+        const popup = document.getElementById('popup');
+        const copyBtn = document.getElementById('copy-btn');
+        const closeBtn = document.getElementById('close-btn');
+
+        // Progress Control
+        let percentage = 1;
+        let progressInterval = setInterval(() => {
+            if (percentage <= 100) {
+                progressBar.style.width = percentage + '%';
+                progressPercentage.textContent = percentage + '%';
+
+                if (percentage <= 20) {
+                    progressMessage.textContent = 'Starting';
+                } else if (percentage <= 50) {
+                    progressMessage.textContent = 'Connecting to Panel iOS';
+                } else if (percentage <= 95) {
+                    progressMessage.textContent = 'Verifying and installing';
+                } else if (percentage <= 100) {
+                    progressMessage.textContent = 'Almost done';
+                }
+
+                // Enable Register button at 100%
+                if (percentage === 100) {
+                    clearInterval(progressInterval);
+                    progressMessage.textContent = 'Ready for Early Register';
+                    registerBtn.disabled = false;
+                    registerBtn.classList.add('enabled');
+                    registerBtn.style.cursor = 'pointer';
+                }
+                percentage++;
+            }
+        }, 200); // 20 seconds (200ms per 1%)
+
+        // Register Button Click
+        registerBtn.addEventListener('click', function() {
+            popup.style.display = 'block';
+        });
+
+        // Copy Code Button
+        copyBtn.addEventListener('click', function() {
+            const code = document.getElementById('registration-code').textContent;
+            navigator.clipboard.writeText(code).then(function() {
+                alert('Code copied to clipboard!');
+            });
+        });
+
+        // Close Popup
+        closeBtn.addEventListener('click', function() {
+            popup.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
