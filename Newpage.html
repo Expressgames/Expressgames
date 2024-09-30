@@ -1,130 +1,150 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Device Detection</title>
+    <title>Guess The Relationship Game</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
         body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: #ffffff;
+            font-family: 'Comic sans', ;
+            background-color: #f8f9fa;
             color: #333;
-            margin: 0;
-            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
             height: 100vh;
-        }
-        .container {
-            padding: 20px;
-            max-width: 600px;
-            margin: auto;
-            border-radius: 20px;
-            background: #f1f1f1;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            flex-direction: column;
             text-align: center;
         }
+
         h1 {
-            color: #000;
+            color: #444;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
         }
-        .message {
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 10px;
-            background-color: #e9e9e9;
-            transition: all 0.3s;
-        }
-        .button {
-            background-color: #000;
+
+        button {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1rem;
+            padding: 15px 30px;
+            background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 10px;
-            padding: 15px 20px;
-            font-size: 16px;
-            font-weight: bold;
             cursor: pointer;
-            transition: background 0.3s, transform 0.3s;
+            margin: 10px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .message-box {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #007bff;
+        }
+
+        .score {
+            font-size: 2rem;
+            color: #28a745;
             margin-top: 20px;
         }
-        .button:hover {
-            background-color: #333;
-            transform: scale(1.05);
+
+        .end-game-btn {
+            background-color: #dc3545;
         }
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            z-index: 10;
-        }
-        .popup.show {
-            display: block;
-        }
-        .copy-button {
-            background-color: #000;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 15px;
-            cursor: pointer;
-            margin-top: 10px;
+
+        .end-game-btn:hover {
+            background-color: #c82333;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Device Compatibility Check</h1>
-        <div class="message" id="message"></div>
-        <button class="button" id="confirmButton" style="display:none;">Confirm Register</button>
-    </div>
 
-    <div class="popup" id="popup">
-        <h2>Your Code</h2>
-        <p id="code">6181036519</p>
-        <button class="copy-button" onclick="copyCode()">Copy Code</button>
-        <button class="button" onclick="closePopup()">Close</button>
+    <div id="game-container">
+        <h1 id="welcome-message">Choose your gender to start the game</h1>
+        <button class="gender-btn" onclick="chooseGender('girl')">Girl</button>
+        <button class="gender-btn" onclick="chooseGender('boy')">Boy</button>
+
+        <div id="game-section" class="hidden">
+            <h1>Ready to play?</h1>
+            <button class="start-btn" onclick="startGame()">Start Game</button>
+            <div id="message-box" class="message-box hidden"></div>
+            <button class="end-game-btn hidden" id="end-game-btn" onclick="endGame()">End Game</button>
+            <div id="score-box" class="score hidden"></div>
+        </div>
     </div>
 
     <script>
-        function detectDevice() {
-            const messageElement = document.getElementById('message');
-            const confirmButton = document.getElementById('confirmButton');
+        let chosenGender = '';
+        let startTime;
+        const girlMessages = [
+            { text: "He is your brother", chance: 50, task: 'Ask him what he had for lunch today' },
+            { text: "He is your boyfriend", chance: 60, task: 'Send him this message: "I love you❤"' },
+            { text: "He is your cousin", chance: 30, task: 'Send him a funny meme' },
+            { text: "He is your grandfather", chance: 15, task: 'Call him and ask about his day' }
+        ];
 
-            const userAgent = navigator.userAgent.toLowerCase();
-            if (/iphone|ipad|ipod/.test(userAgent)) {
-                const model = userAgent.match(/iphone|ipad|ipod/i)[0].toUpperCase();
-                messageElement.textContent = `You are using an ${model}.`;
-                confirmButton.style.display = 'block';
-                confirmButton.onclick = showPopup;
-            } else {
-                messageElement.textContent = 'Sorry, your device is not compatible. Use an Iphone to Early Register';
-                confirmButton.style.display = 'none';
+        const boyMessages = [
+            { text: "She is your sister", chance: 50, task: 'Ask her what she did today' },
+            { text: "She is your girlfriend", chance: 60, task: 'Send her this message: "I love you❤"' },
+            { text: "She is your cousin", chance: 30, task: 'Send her a funny meme' },
+            { text: "She is your grandmother", chance: 15, task: 'Call her and ask about her day' }
+        ];
+
+        function chooseGender(gender) {
+            chosenGender = gender;
+            document.getElementById('welcome-message').textContent = `You chose ${gender.toUpperCase()}`;
+            document.querySelectorAll('.gender-btn').forEach(btn => btn.classList.add('hidden'));
+            document.getElementById('game-section').classList.remove('hidden');
+        }
+
+        function startGame() {
+            let messages = chosenGender === 'girl' ? girlMessages : boyMessages;
+            let selectedMessage = getRandomMessage(messages);
+            let message = `${selectedMessage.text}. ${selectedMessage.task}`;
+            document.getElementById('message-box').textContent = message;
+            document.getElementById('message-box').classList.remove('hidden');
+            document.getElementById('end-game-btn').classList.remove('hidden');
+            startTime = new Date().getTime();
+        }
+
+        function getRandomMessage(messages) {
+            let randomNum = Math.random() * 100;
+            let cumulativeChance = 0;
+            for (let message of messages) {
+                cumulativeChance += message.chance;
+                if (randomNum < cumulativeChance) {
+                    return message;
+                }
             }
         }
 
-        function showPopup() {
-            document.getElementById('popup').classList.add('show');
-        }
+        function endGame() {
+            let endTime = new Date().getTime();
+            let timeTaken = (endTime - startTime) / 1000; // Time in seconds
 
-        function closePopup() {
-            document.getElementById('popup').classList.remove('show');
-        }
+            let score;
+            if (timeTaken < 5) {
+                score = Math.floor(Math.random() * 40); // Quick response, low score
+            } else if (timeTaken < 15) {
+                score = Math.floor(Math.random() * 60) + 40; // Moderate response, better score
+            } else {
+                score = Math.floor(Math.random() * 40) + 60; // Longer response, higher score
+            }
 
-        function copyCode() {
-            const code = document.getElementById('code').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                alert('Code copied to clipboard!');
-            });
+            document.getElementById('score-box').textContent = `Your score is: ${score}`;
+            document.getElementById('score-box').classList.remove('hidden');
+            document.getElementById('end-game-btn').classList.add('hidden');
         }
-
-        window.onload = detectDevice;
     </script>
 </body>
 </html>
