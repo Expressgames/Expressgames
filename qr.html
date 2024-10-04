@@ -42,40 +42,74 @@
   <div id="reader"></div>
   <div class="message" id="message">Initializing...</div>
 
-<script>
-  async function checkCameraPermissions() {
-    try {
-      let permission = await navigator.permissions.query({ name: 'camera' });
+  <script>
+    let scannedTickets = new Set();
 
-      if (permission.state === 'granted') {
-        document.getElementById('message').innerHTML = "Permission granted, initializing scanner...";
-        startQrScanner(); // Call QR scanner initialization if permission is granted
-      } else if (permission.state === 'denied') {
-        document.getElementById('message').innerHTML = "Camera access was denied. Please allow access in your browser settings.";
-      } else if (permission.state === 'prompt') {
-        document.getElementById('message').innerHTML = "Please allow camera access when prompted.";
-        requestCameraAccess(); // Ask for permission if it's in 'prompt' state
+    // Function to handle successful QR code scan
+    function onScanSuccess(decodedText, decodedResult) {
+      const messageElement = document.getElementById('message');
+
+      if (scannedTickets.has(decodedText)) {
+        messageElement.innerHTML = "Already Scanned!";
+        messageElement.className = "message already-scanned";
+      } else if (decodedText.startsWith("Playcentrix-")) {
+        messageElement.innerHTML = "Entry Approved!";
+        messageElement.className = "message approved";
+        scannedTickets.add(decodedText);
+      } else {
+        messageElement.innerHTML = "Wrong QR Code!";
+        messageElement.className = "message denied";
       }
-    } catch (err) {
-      console.error("Error checking camera permissions:", err);
     }
-  }
 
-  // Function to request camera access and start scanner
-  function requestCameraAccess() {
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(function (stream) {
-        document.getElementById('message').innerHTML = "Camera access granted. Scan a QR Code.";
-        startQrScanner(); // Start scanner after access is granted
-      })
-      .catch(function (err) {
-        console.error("Camera access denied:", err);
-        document.getElementById('message').innerHTML = "Camera access denied. Please enable camera access.";
-      });
-  }
+    // Function to handle errors in QR code scan
+    function onScanError(errorMessage) {
+      console.warn("QR code scan error:", errorMessage);
+      document.getElementById('message').innerHTML = "Error scanning QR code.";
+    }
 
-  checkCameraPermissions(); // Check camera permissions when the page loads
-</script>
+    // Function to request camera permission and start scanner
+    function startQrScanner() {
+      try {
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+          "reader", { fps: 10, qrbox: 250 });
+
+        // Start the scanner
+        html5QrcodeScanner.render(onScanSuccess, onScanError);
+        console.log("Scanner started successfully");
+      } catch (err) {
+        console.error("Error initializing the QR code scanner: ", err);
+        document.getElementById('message').innerHTML = "Error initializing scanner.";
+      }
+    }
+
+    // Function to request camera permission and handle errors
+    function requestCameraAccess() {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(stream) {
+          // If permission granted, start the scanner
+          document.getElementById('message').innerHTML = "Permission granted, initializing scanner...";
+          startQrScanner();
+        })
+        .catch(function(err) {
+          // Handle specific error cases
+          const messageElement = document.getElementById('message');
+          if (err.name === 'NotAllowedError') {
+            messageElement.innerHTML = "Camera access was denied. Please allow access in your browser settings.";
+          } else if (err.name === 'NotFoundError') {
+            messageElement.innerHTML = "No camera found. Please connect a camera and try again.";
+          } else if (err.name === 'NotReadableError') {
+            messageElement.innerHTML = "Unable to access the camera. It might be in use by another application.";
+          } else {
+            messageElement.innerHTML = "Camera access error: " + err.message;
+          }
+          console.error("Camera access error: ", err);
+        });
+    }
+
+    // Call the function to request camera access
+    requestCameraAccess();
+  </script>
 
 </body>
 </html>
