@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QR Code Scanner</title>
+  <title>QR Code Ticket Scanner</title>
   <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
   <style>
     body {
@@ -29,32 +29,43 @@
 </head>
 <body>
 
-  <h1>QR Code Scanner</h1>
+  <h1>QR Code Ticket Scanner</h1>
   <div id="reader"></div>
   <div class="message" id="message">Initializing scanner...</div>
 
   <script>
-    // Store environment configuration for scanner settings
-    const environmentConfig = {
-      fps: 10,
-      qrboxSize: 250,
-      facingMode: { exact: "environment" } // Use back camera on mobile
-    };
+    let scannedCodes = new Set(); // Keep track of already scanned codes
 
     function onScanSuccess(decodedText) {
-      document.getElementById('message').innerHTML = "Scanned successfully: " + decodedText;
+      const messageElement = document.getElementById('message');
+
+      if (scannedCodes.has(decodedText)) {
+        messageElement.innerHTML = "Already Scanned";
+        return;
+      }
+
+      if (decodedText.startsWith("Playcentrix-")) {
+        messageElement.innerHTML = "Entry Approved: " + decodedText;
+        scannedCodes.add(decodedText);  // Mark the code as scanned
+      } else {
+        messageElement.innerHTML = "Wrong QR Code";
+      }
     }
 
     function onScanError(errorMessage) {
       console.error("Scan error: ", errorMessage);
     }
 
-    // Function to initialize the QR scanner
+    // Initialize the QR scanner
     function startQrScanner() {
       const qrScanner = new Html5Qrcode("reader");
+      
       qrScanner.start(
-        environmentConfig.facingMode,
-        { fps: environmentConfig.fps, qrbox: environmentConfig.qrboxSize },
+        { facingMode: "environment" },  // Use back camera on mobile
+        {
+          fps: 10,  // Frame-per-second
+          qrbox: 250,  // Display QR scanning area
+        },
         onScanSuccess,
         onScanError
       ).catch(err => {
@@ -63,7 +74,7 @@
       });
     }
 
-    // Request camera access
+    // Request camera access and start the scanner
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(function(stream) {
         document.getElementById('message').innerHTML = "Permission granted, starting scanner...";
