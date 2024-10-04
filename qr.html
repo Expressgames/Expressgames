@@ -3,72 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QR Code Scanner</title>
-  <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+  <title>Camera Access Test</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       height: 100vh;
-      background-color: #f5f5f5;
     }
-    #reader {
-      width: 300px;
-      height: 300px;
-      margin-bottom: 20px;
-    }
-    .message {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #333;
+    video {
+      width: 100%;
+      max-width: 600px;
     }
   </style>
 </head>
 <body>
 
-  <h1>QR Code Scanner</h1>
-  <div id="reader"></div>
-  <div class="message" id="message">Initializing scanner...</div>
+  <h1>Camera Access Test</h1>
+  <video id="video" autoplay></video>
+  <div id="errorMessage"></div>
 
   <script>
-    function onScanSuccess(decodedText) {
-      document.getElementById('message').innerHTML = "Scanned successfully: " + decodedText;
-    }
-
-    function onScanError(errorMessage) {
-      console.error("Scan error: ", errorMessage);
-    }
-
-    // Try to initialize the scanner with basic setup
-    function startQrScanner() {
-      const qrScanner = new Html5Qrcode("reader");
-      
-      qrScanner.start(
-        { facingMode: "environment" },  // Use back camera on mobile
-        {
-          fps: 10,  // Frame-per-second
-          qrbox: 250,  // Display QR scanning area
-        },
-        onScanSuccess,
-        onScanError
-      ).catch(err => {
-        console.error("Error initializing scanner: ", err);
-        document.getElementById('message').innerHTML = "Error initializing scanner: " + err;
-      });
-    }
-
-    // Request camera access and start the scanner
+    // Test if the camera can be accessed
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(function(stream) {
-        document.getElementById('message').innerHTML = "Permission granted, starting scanner...";
-        startQrScanner();
+        const videoElement = document.getElementById('video');
+        videoElement.srcObject = stream;
       })
       .catch(function(err) {
-        document.getElementById('message').innerHTML = "Camera access denied: " + err.message;
-        console.error("Camera access denied: ", err);
+        document.getElementById('errorMessage').innerHTML = "Camera access denied: " + err.message;
+        console.error("Camera access error: ", err);
       });
   </script>
 
