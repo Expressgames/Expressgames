@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QR Code Ticket Scanner</title>
-  <!-- Make sure to use the correct script link for html5-qrcode -->
-  <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+  <title>QR Code Ticket Scanner - Alternative</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -16,79 +14,47 @@
       height: 100vh;
       background-color: #f5f5f5;
     }
-    #reader {
-      width: 300px;
-      height: 300px;
-      margin-bottom: 20px;
+    iframe {
+      width: 100%;
+      max-width: 400px;
+      height: 400px;
+      border: 0;
     }
     .message {
       font-size: 1.5rem;
       font-weight: bold;
       color: #333;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
 
   <h1>QR Code Ticket Scanner</h1>
-  <div id="reader"></div>
-  <div class="message" id="message">Initializing scanner...</div>
+  <iframe id="qrScanner" src="https://your-qrcode-api-url.com/embed" allow="camera"></iframe>
+  <div class="message" id="message">Waiting for QR code scan...</div>
 
   <script>
-    // Ensure the html5-qrcode library is loaded and available
-    document.addEventListener("DOMContentLoaded", function() {
+    let scannedCodes = new Set();
 
-      let scannedCodes = new Set(); // Keep track of already scanned codes
+    // Function to handle messages coming from iframe (QR scanner)
+    window.addEventListener('message', function(event) {
+      const qrCodeText = event.data;
+      const messageElement = document.getElementById('message');
 
-      function onScanSuccess(decodedText) {
-        const messageElement = document.getElementById('message');
-
-        if (scannedCodes.has(decodedText)) {
-          messageElement.innerHTML = "Already Scanned";
-          return;
-        }
-
-        if (decodedText.startsWith("Playcentrix-")) {
-          messageElement.innerHTML = "Entry Approved: " + decodedText;
-          scannedCodes.add(decodedText);  // Mark the code as scanned
-        } else {
-          messageElement.innerHTML = "Wrong QR Code";
-        }
+      if (scannedCodes.has(qrCodeText)) {
+        messageElement.innerHTML = "Already Scanned";
+        return;
       }
 
-      function onScanError(errorMessage) {
-        console.error("Scan error: ", errorMessage);
+      if (qrCodeText.startsWith("Playcentrix-")) {
+        messageElement.innerHTML = "Entry Approved: " + qrCodeText;
+        scannedCodes.add(qrCodeText);
+      } else {
+        messageElement.innerHTML = "Wrong QR Code";
       }
-
-      // Initialize the QR scanner
-      function startQrScanner() {
-        const qrScanner = new Html5Qrcode("reader");
-        
-        qrScanner.start(
-          { facingMode: "environment" },  // Use back camera on mobile
-          {
-            fps: 10,  // Frame-per-second
-            qrbox: 250,  // Display QR scanning area
-          },
-          onScanSuccess,
-          onScanError
-        ).catch(err => {
-          console.error("Error initializing scanner: ", err);
-          document.getElementById('message').innerHTML = "Error initializing scanner: " + err.message;
-        });
-      }
-
-      // Request camera access and start the scanner
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then(function(stream) {
-          document.getElementById('message').innerHTML = "Permission granted, starting scanner...";
-          startQrScanner();
-        })
-        .catch(function(err) {
-          document.getElementById('message').innerHTML = "Camera access denied: " + err.message;
-          console.error("Camera access denied: ", err);
-        });
     });
+
   </script>
 
 </body>
