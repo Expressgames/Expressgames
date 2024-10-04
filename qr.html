@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playcentrix QR Code Ticket Scanner</title>
+  <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    #reader {
+      width: 300px;
+      height: 300px;
+      margin-bottom: 20px;
+    }
+    .message {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #333;
+    }
+    .approved {
+      color: green;
+    }
+    .denied {
+      color: red;
+    }
+    .already-scanned {
+      color: orange;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Playcentrix QR Code Ticket Scanner</h1>
+  <div id="reader"></div>
+  <div class="message" id="message">Initializing...</div>
+
+  <script>
+    let scannedTickets = new Set();
+    
+    // Function to handle successful QR code scan
+    function onScanSuccess(decodedText, decodedResult) {
+      const messageElement = document.getElementById('message');
+
+      if (scannedTickets.has(decodedText)) {
+        messageElement.innerHTML = "Already Scanned!";
+        messageElement.className = "message already-scanned";
+      } else if (decodedText.startsWith("Playcentrix-")) {
+        messageElement.innerHTML = "Entry Approved!";
+        messageElement.className = "message approved";
+        scannedTickets.add(decodedText);
+      } else {
+        messageElement.innerHTML = "Wrong QR Code!";
+        messageElement.className = "message denied";
+      }
+    }
+
+    // Function to handle errors in QR code scan
+    function onScanError(errorMessage) {
+      console.warn(errorMessage);
+    }
+
+    // Function to request camera permission
+    function startQrScanner() {
+      let html5QrcodeScanner = new Html5QrcodeScanner(
+        "reader", { fps: 10, qrbox: 250 });
+
+      html5QrcodeScanner.render(onScanSuccess, onScanError);
+    }
+
+    // Request camera permission
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(function(stream) {
+        // If permission granted, start the scanner
+        document.getElementById('message').innerHTML = "Scan a QR Code";
+        startQrScanner();
+      })
+      .catch(function(err) {
+        // Handle the error if permission is denied
+        document.getElementById('message').innerHTML = "Camera access denied. Please allow camera access to scan.";
+        console.error("Camera access denied: ", err);
+      });
+  </script>
+
+</body>
+</html>
