@@ -3,37 +3,75 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Camera Access Test</title>
+  <title>QR Code Scanner</title>
+  <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
   <style>
     body {
+      font-family: Arial, sans-serif;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       height: 100vh;
+      background-color: #f5f5f5;
     }
-    video {
-      width: 100%;
-      max-width: 600px;
+    #reader {
+      width: 300px;
+      height: 300px;
+      margin-bottom: 20px;
+    }
+    .message {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #333;
     }
   </style>
 </head>
 <body>
 
-  <h1>Camera Access Test</h1>
-  <video id="video" autoplay></video>
-  <div id="errorMessage"></div>
+  <h1>QR Code Scanner</h1>
+  <div id="reader"></div>
+  <div class="message" id="message">Initializing scanner...</div>
 
   <script>
-    // Test if the camera can be accessed
+    // Store environment configuration for scanner settings
+    const environmentConfig = {
+      fps: 10,
+      qrboxSize: 250,
+      facingMode: { exact: "environment" } // Use back camera on mobile
+    };
+
+    function onScanSuccess(decodedText) {
+      document.getElementById('message').innerHTML = "Scanned successfully: " + decodedText;
+    }
+
+    function onScanError(errorMessage) {
+      console.error("Scan error: ", errorMessage);
+    }
+
+    // Function to initialize the QR scanner
+    function startQrScanner() {
+      const qrScanner = new Html5Qrcode("reader");
+      qrScanner.start(
+        environmentConfig.facingMode,
+        { fps: environmentConfig.fps, qrbox: environmentConfig.qrboxSize },
+        onScanSuccess,
+        onScanError
+      ).catch(err => {
+        console.error("Error initializing scanner: ", err);
+        document.getElementById('message').innerHTML = "Error initializing scanner: " + err.message;
+      });
+    }
+
+    // Request camera access
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(function(stream) {
-        const videoElement = document.getElementById('video');
-        videoElement.srcObject = stream;
+        document.getElementById('message').innerHTML = "Permission granted, starting scanner...";
+        startQrScanner();
       })
       .catch(function(err) {
-        document.getElementById('errorMessage').innerHTML = "Camera access denied: " + err.message;
-        console.error("Camera access error: ", err);
+        document.getElementById('message').innerHTML = "Camera access denied: " + err.message;
+        console.error("Camera access denied: ", err);
       });
   </script>
 
