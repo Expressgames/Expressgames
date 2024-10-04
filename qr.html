@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>QR Code Ticket Scanner</title>
+  <!-- Make sure to use the correct script link for html5-qrcode -->
   <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
   <style>
     body {
@@ -34,56 +35,60 @@
   <div class="message" id="message">Initializing scanner...</div>
 
   <script>
-    let scannedCodes = new Set(); // Keep track of already scanned codes
+    // Ensure the html5-qrcode library is loaded and available
+    document.addEventListener("DOMContentLoaded", function() {
 
-    function onScanSuccess(decodedText) {
-      const messageElement = document.getElementById('message');
+      let scannedCodes = new Set(); // Keep track of already scanned codes
 
-      if (scannedCodes.has(decodedText)) {
-        messageElement.innerHTML = "Already Scanned";
-        return;
+      function onScanSuccess(decodedText) {
+        const messageElement = document.getElementById('message');
+
+        if (scannedCodes.has(decodedText)) {
+          messageElement.innerHTML = "Already Scanned";
+          return;
+        }
+
+        if (decodedText.startsWith("Playcentrix-")) {
+          messageElement.innerHTML = "Entry Approved: " + decodedText;
+          scannedCodes.add(decodedText);  // Mark the code as scanned
+        } else {
+          messageElement.innerHTML = "Wrong QR Code";
+        }
       }
 
-      if (decodedText.startsWith("Playcentrix-")) {
-        messageElement.innerHTML = "Entry Approved: " + decodedText;
-        scannedCodes.add(decodedText);  // Mark the code as scanned
-      } else {
-        messageElement.innerHTML = "Wrong QR Code";
+      function onScanError(errorMessage) {
+        console.error("Scan error: ", errorMessage);
       }
-    }
 
-    function onScanError(errorMessage) {
-      console.error("Scan error: ", errorMessage);
-    }
+      // Initialize the QR scanner
+      function startQrScanner() {
+        const qrScanner = new Html5Qrcode("reader");
+        
+        qrScanner.start(
+          { facingMode: "environment" },  // Use back camera on mobile
+          {
+            fps: 10,  // Frame-per-second
+            qrbox: 250,  // Display QR scanning area
+          },
+          onScanSuccess,
+          onScanError
+        ).catch(err => {
+          console.error("Error initializing scanner: ", err);
+          document.getElementById('message').innerHTML = "Error initializing scanner: " + err.message;
+        });
+      }
 
-    // Initialize the QR scanner
-    function startQrScanner() {
-      const qrScanner = new Html5Qrcode("reader");
-      
-      qrScanner.start(
-        { facingMode: "environment" },  // Use back camera on mobile
-        {
-          fps: 10,  // Frame-per-second
-          qrbox: 250,  // Display QR scanning area
-        },
-        onScanSuccess,
-        onScanError
-      ).catch(err => {
-        console.error("Error initializing scanner: ", err);
-        document.getElementById('message').innerHTML = "Error initializing scanner: " + err.message;
-      });
-    }
-
-    // Request camera access and start the scanner
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(function(stream) {
-        document.getElementById('message').innerHTML = "Permission granted, starting scanner...";
-        startQrScanner();
-      })
-      .catch(function(err) {
-        document.getElementById('message').innerHTML = "Camera access denied: " + err.message;
-        console.error("Camera access denied: ", err);
-      });
+      // Request camera access and start the scanner
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(stream) {
+          document.getElementById('message').innerHTML = "Permission granted, starting scanner...";
+          startQrScanner();
+        })
+        .catch(function(err) {
+          document.getElementById('message').innerHTML = "Camera access denied: " + err.message;
+          console.error("Camera access denied: ", err);
+        });
+    });
   </script>
 
 </body>
