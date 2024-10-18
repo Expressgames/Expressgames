@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Received</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(130deg, #141E30, #243B55);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            animation: glow 2s infinite alternate;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            background: transparent;
+            color: #00FF87;
+            border: 2px solid #00FF87;
+            border-radius: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: fadeIn 1.5s ease-in-out forwards;
+        }
+
+        button:hover {
+            background-color: #00FF87;
+            color: #000;
+            box-shadow: 0 0 15px #00FF87, 0 0 30px #00FF87, 0 0 60px #00FF87;
+        }
+
+        .options {
+            display: none;
+            text-align: center;
+        }
+
+        .options h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            animation: slideIn 1.5s ease forwards;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-content {
+            background: #1c1c1c;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            border: 3px solid #00FF87;
+            box-shadow: 0 0 15px #00FF87, 0 0 30px #00FF87, 0 0 60px #00FF87;
+            transform: scale(0);
+            animation: popUp 0.5s ease forwards;
+        }
+
+        .popup-content p {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #00FF87;
+        }
+
+        .popup-content button {
+            background: #00FF87;
+            border: none;
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 15px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .popup-content button:hover {
+            box-shadow: 0 0 10px #00FF87, 0 0 20px #00FF87, 0 0 40px #00FF87;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px #00FF87, 0 0 20px #00FF87, 0 0 40px #00FF87;
+            }
+            to {
+                text-shadow: 0 0 20px #00FF87, 0 0 40px #00FF87, 0 0 80px #00FF87;
+            }
+        }
+
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes popUp {
+            0% {
+                transform: scale(0);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Starting page -->
+    <h1>Product Received at Playcentrix</h1>
+    <button id="nextBtn">Next</button>
+
+    <!-- Options page -->
+    <div class="options" id="optionsPage">
+        <h2>What do you want to add?</h2>
+        <button id="shootingSystemBtn">Add a shooting system</button>
+        <button id="paintGunBtn">Paint gun blue</button>
+    </div>
+
+    <!-- Popup confirmation -->
+    <div class="popup" id="popup">
+        <div class="popup-content">
+            <p>Are you sure?</p>
+            <button id="yesBtn">Yes</button>
+            <button id="noBtn">No</button>
+        </div>
+    </div>
+
+    <script>
+        const nextBtn = document.getElementById('nextBtn');
+        const optionsPage = document.getElementById('optionsPage');
+        const shootingSystemBtn = document.getElementById('shootingSystemBtn');
+        const paintGunBtn = document.getElementById('paintGunBtn');
+        const popup = document.getElementById('popup');
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+
+        let selectedOption = '';
+
+        nextBtn.addEventListener('click', () => {
+            nextBtn.style.display = 'none';
+            optionsPage.style.display = 'block';
+        });
+
+        shootingSystemBtn.addEventListener('click', () => {
+            selectedOption = 'shootingSystem';
+            popup.style.display = 'flex';
+        });
+
+        paintGunBtn.addEventListener('click', () => {
+            selectedOption = 'paintGun';
+            popup.style.display = 'flex';
+        });
+
+        yesBtn.addEventListener('click', () => {
+            window.location.href = 'verify.html';
+        });
+
+        noBtn.addEventListener('click', () => {
+            popup.style.display = 'none';
+        });
+
+        // Hide popup on load
+        window.addEventListener('load', () => {
+            popup.style.display = 'none';
+        });
+    </script>
+
+</body>
+</html>
