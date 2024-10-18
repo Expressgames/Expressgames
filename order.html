@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Status</title>
+
+    <!-- Particle.js -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+    <style>
+        /* General Styling */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #0D0D0D; /* Dark theme */
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        h2 {
+            font-size: 1.2em;
+            color: #888; /* Subtle powered-by color */
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        /* Status Text Styling */
+        h1 {
+            font-size: 3em;
+            margin: 20px 0;
+            color: #00c6ff; /* Bright blue color for visibility */
+            cursor: pointer;
+        }
+
+        /* Button Transitions */
+        #status {
+            font-size: 2.5em;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 15px #00FF87, 0 0 30px #00FF87;
+            transition: all 0.3s ease;
+        }
+
+        #status:hover {
+            transform: scale(1.1);
+            border-color: #00FF87;
+            box-shadow: 0 0 25px #00FF87, 0 0 50px #00FF87;
+        }
+
+        /* Glowing Ready State */
+        #status.glow {
+            color: #FFD700;
+            box-shadow: 0 0 25px #FFD700, 0 0 50px #FFD700;
+        }
+
+        /* Better Hover and Click Effects */
+        #status.glow:hover {
+            transform: scale(1.15);
+            border-color: #FFD700;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="particles-js"></div>
+
+    <h2>Powered by Playcentrix</h2>
+    <h1 id="status">Waiting</h1>
+
+    <script>
+        const statusElement = document.getElementById('status');
+        const statuses = ['Waiting', 'Processing', 'Final Touches', 'Ready for Delivery'];
+        let currentStage = localStorage.getItem('orderStatus') || 'Waiting';
+        let clickCount = 0;
+
+        statusElement.textContent = currentStage;
+        if (currentStage === 'Ready for Delivery') {
+            statusElement.classList.add('glow');
+        }
+
+        statusElement.addEventListener('click', () => {
+            clickCount++;
+            if (clickCount === 5) {
+                let nextStage = getNextStage(currentStage);
+                updateStage(nextStage);
+                clickCount = 0;
+            }
+            if (clickCount === 15) {
+                updateStage('Waiting');
+                clickCount = 0;
+            }
+        });
+
+        function getNextStage(current) {
+            let index = statuses.indexOf(current);
+            return statuses[(index + 1) % statuses.length];
+        }
+
+        function updateStage(stage) {
+            currentStage = stage;
+            statusElement.textContent = stage;
+            localStorage.setItem('orderStatus', stage);
+
+            if (stage === 'Ready for Delivery') {
+                statusElement.classList.add('glow');
+            } else {
+                statusElement.classList.remove('glow');
+            }
+        }
+
+        particlesJS('particles-js', {
+            "particles": {
+                "number": {
+                    "value": 100,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#00FFDD"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    }
+                },
+                "opacity": {
+                    "value": 0.7,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 10,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#00FFDD",
+                    "opacity": 0.5,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 5,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 400,
+                        "line_linked": {
+                            "opacity": 1
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 8,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 200,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+    </script>
+</body>
+</html>
