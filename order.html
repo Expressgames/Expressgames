@@ -89,7 +89,7 @@
 
     <script>
         const statusElement = document.getElementById('status');
-        const statuses = ['Waiting', 'Processing', 'Final Touches', 'Ready for Delivery'];
+        const statuses = ['Waiting', 'Processing', 'In progress', 'Completing requested requirements', 'Almost done', 'Ready for Delivery'];
         let currentStage = localStorage.getItem('orderStatus') || 'Waiting';
         let clickCount = 0;
 
@@ -100,7 +100,7 @@
 
         statusElement.addEventListener('click', () => {
             clickCount++;
-            if (clickCount === 5) {
+            if (clickCount === 08) {
                 let nextStage = getNextStage(currentStage);
                 updateStage(nextStage);
                 clickCount = 0;
