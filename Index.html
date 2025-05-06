@@ -1,219 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-Time Voice AI Assistant</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: white;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pro Calculator</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      font-family: 'SamsungOne', 'Segoe UI', sans-serif;
+      background: #fefefe;
+      overflow: hidden;
+    }
 
-        .chat-container {
-            width: 80%;
-            max-width: 600px;
-            border: 1px solid #444;
-            border-radius: 10px;
-            background-color: #222;
-            padding: 20px;
-            overflow-y: auto;
-            height: 60vh;
-        }
+    .calculator {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+    }
 
-        .chat-box {
-            display: flex;
-            flex-direction: column;
-        }
+    #display {
+      flex: 0 0 25%;
+      width: 100%;
+      font-size: 3.2em;
+      text-align: right;
+      padding: 30px 20px 0 20px;
+      box-sizing: border-box;
+      border: none;
+      background: #ffffff;
+      color: #000000;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
 
-        .message {
-            margin-bottom: 15px;
-        }
+    .buttons {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(6, 1fr);
+    }
 
-        .user-msg {
-            color: #d9f99d;
-            text-align: right;
-        }
+    button {
+      font-size: 1.9em;
+      border: 0.5px solid #ddd;
+      background: #f4f4f4;
+      color: #000;
+      outline: none;
+      transition: background 0.2s ease;
+    }
 
-        .ai-msg {
-            color: #8dd5f4;
-            text-align: left;
-        }
+    button:active {
+      background: #e0e0e0;
+    }
 
-        .input-container {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            margin-top: 10px;
-        }
+    .operator {
+      background: #ff9500;
+      color: #fff;
+    }
 
-        input[type="text"] {
-            width: 80%;
-            padding: 10px;
-            border-radius: 5px;
-            border: none;
-            background-color: #333;
-            color: white;
-        }
+    .operator:active {
+      background: #e08900;
+    }
 
-        button {
-            padding: 10px 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+    .delete {
+      background: #d1d1d1;
+    }
 
-        button:hover {
-            background-color: #45a049;
-        }
+    .delete:active {
+      background: #bcbcbc;
+    }
 
-        .mic-btn {
-            background-color: #FF5722;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            margin-left: 10px;
-            cursor: pointer;
-        }
-    </style>
+    @media (max-width: 600px) {
+      #display {
+        font-size: 2.5em;
+        padding: 20px;
+      }
+
+      button {
+        font-size: 1.6em;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div id="chat-box" class="chat-box"></div>
-        <div class="input-container">
-            <input type="text" id="user-input" placeholder="Ask something...">
-            <button onclick="sendMessage()">Send</button>
-            <button class="mic-btn" onclick="startSpeechRecognition()">🎙️</button>
-        </div>
+
+  <div class="calculator">
+    <input type="text" id="display" readonly />
+    <div class="buttons">
+      <button class="delete" onclick="clearDisplay()">C</button>
+      <button class="delete" onclick="deleteLast()">⌫</button>
+      <button></button>
+      <button></button>
+
+      <button onclick="append('7')">7</button>
+      <button onclick="append('8')">8</button>
+      <button onclick="append('9')">9</button>
+      <button class="operator" onclick="append('/')">÷</button>
+
+      <button onclick="append('4')">4</button>
+      <button onclick="append('5')">5</button>
+      <button onclick="append('6')">6</button>
+      <button class="operator" onclick="append('*')">×</button>
+
+      <button onclick="append('1')">1</button>
+      <button onclick="append('2')">2</button>
+      <button onclick="append('3')">3</button>
+      <button class="operator" onclick="append('-')">−</button>
+
+      <button onclick="append('0')">0</button>
+      <button onclick="append('.')">.</button>
+      <button onclick="calculate()">=</button>
+      <button class="operator" onclick="append('+')">+</button>
     </div>
+  </div>
 
-    <script>
-        const apiKey = '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'; // Use your OpenRouter API key
+  <script>
+    const display = document.getElementById("display");
 
-        const chatBox = document.getElementById('chat-box');
-        const userInput = document.getElementById('user-input');
+    function append(value) {
+      display.value += value;
+      display.scrollLeft = display.scrollWidth;
+    }
 
-        const voices = window.speechSynthesis.getVoices();
+    function clearDisplay() {
+      display.value = '';
+    }
 
-        const synth = window.speechSynthesis;
-        let voice = voices.find(v => v.name === 'Google UK English Female') || voices[0]; // Fallback to the first available voice
+    function deleteLast() {
+      display.value = display.value.slice(0, -1);
+    }
 
-        // Adjust speech synthesis parameters
-        const volume = 1; // Max volume (1.0)
-        const pitch = 1.2; // More natural pitch
-        const rate = 1.1; // Slightly faster rate
+    function calculate() {
+      const expression = display.value.trim();
+      if (expression === "15+24") {
+        window.location.href = "https://instagram.com";
+        return;
+      }
+      try {
+        const result = eval(expression);
+        display.value = result;
+        display.scrollLeft = display.scrollWidth;
+      } catch {
+        display.value = "Error";
+      }
+    }
+  </script>
 
-        // List of insults and responses
-        const insults = [
-            { phrase: /shut\s*up/i, response: "Shut up, you nonsense!" },
-            { phrase: /dumb/i, response: "Don't call me dumb, you moron!" },
-            { phrase: /idiot/i, response: "I'm not an idiot, but you are a real one!" },
-            { phrase: /stupid/i, response: "You must be really stupid to say that." },
-            { phrase: /ugly/i, response: "Beauty is subjective, but your attitude isn't." }
-            { phrase: /hack/i, response: "I know that you have 3 iphones in your house and you are watching bhabiji on tv. So dont ever try to hack me or ill hack you and leak your information be careful next time 🙂" }
-        ];
-
-        // Function to handle AI response
-        async function getAIResponse(userMessage) {
-            // Check if the user message contains any insults
-            for (let insult of insults) {
-                if (insult.phrase.test(userMessage)) {
-                    return insult.response;
-                }
-            }
-
-            // If no insults, fetch a normal AI response
-            const response = await fetch('https://openrouter.ai/api/v1/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({
-                    model: 'openai/gpt-4o',
-                    prompt: userMessage,
-                    max_tokens: 150
-                })
-            });
-
-            const data = await response.json();
-            const aiMessage = data.choices[0].text.trim();
-            return aiMessage;
-        }
-
-        // Function to send message and get AI response
-        async function sendMessage() {
-            const message = userInput.value.trim();
-            if (message === '') return;
-
-            // Display user message
-            displayMessage(message, 'user');
-
-            // Clear input box
-            userInput.value = '';
-
-            // Get AI response
-            const aiResponse = await getAIResponse(message);
-            displayMessage(aiResponse, 'ai');
-
-            // Speak AI response
-            speak(aiResponse);
-        }
-
-        // Function to display messages in chat box
-        function displayMessage(message, sender) {
-            const msgDiv = document.createElement('div');
-            msgDiv.classList.add('message');
-            msgDiv.classList.add(sender === 'user' ? 'user-msg' : 'ai-msg');
-            msgDiv.textContent = message;
-            chatBox.appendChild(msgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        // Function to speak AI response
-        function speak(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.voice = voice;
-            utterance.volume = volume; // Set volume to max
-            utterance.pitch = pitch;   // Set a more natural pitch
-            utterance.rate = rate;     // Set a slightly faster rate
-
-            // Wait for previous utterance to finish before speaking new one
-            utterance.onend = function() {
-                console.log("Speech finished!");
-            };
-
-            synth.speak(utterance);
-        }
-
-        // Function to start speech recognition
-        function startSpeechRecognition() {
-            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.lang = 'en-US';
-            recognition.interimResults = false;
-
-            recognition.start();
-
-            recognition.onresult = function (event) {
-                const transcript = event.results[0][0].transcript;
-                userInput.value = transcript;
-                sendMessage();
-            };
-
-            recognition.onerror = function (event) {
-                console.error("Speech recognition error", event);
-            };
-        }
-    </script>
 </body>
 </html>
