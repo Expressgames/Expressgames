@@ -2,67 +2,91 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>Unlock Free Robux Code</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Roblox Redeem Codes</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f2f2f2;
-      color: #333;
-      margin: 0;
-      padding: 0;
+      background-color: #f0f0f0;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       height: 100vh;
-      flex-direction: column;
       text-align: center;
     }
     .container {
       background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
       width: 90%;
       max-width: 400px;
     }
-    button {
+    button, input {
+      margin-top: 15px;
       padding: 12px 20px;
-      margin: 10px;
       font-size: 16px;
-      border: none;
       border-radius: 6px;
-      cursor: pointer;
-      transition: 0.3s ease;
+      border: none;
+      outline: none;
     }
-    .yes-btn {
-      background-color: #ff4757;
+    #clickBtn {
+      background-color: #3498db;
       color: white;
     }
-    .no-btn {
-      background-color: #ced6e0;
-    }
-    .yes-btn:hover {
-      background-color: #e84118;
-    }
-    .countdown, .secret-input, .code-output {
-      margin-top: 20px;
+    #unlockBtn {
+      background-color: #2ecc71;
+      color: white;
     }
     input {
-      padding: 10px;
-      width: 80%;
-      margin-top: 10px;
-      border-radius: 6px;
+      width: 100%;
       border: 1px solid #ccc;
     }
-    #copyBtn {
-      margin-top: 10px;
-      background-color: #2ed573;
-      color: white;
+    .disabled {
+      opacity: 0.5;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
-  <div class="container" id="mainContent">
-    <h2>No more Codes Available</h2>
-    
+  <div class="container">
+    <h2>Unlock Free Robux Codes</h2>
+    <p>Step 1: Click the button 10 times</p>
+    <button id="clickBtn" onclick="handleClick()">Click Here (<span id="clickCount">0</span>/10)</button>
+
+    <p>Step 2: Type <strong>done</strong> below when finished</p>
+    <input type="text" id="doneInput" placeholder="Type 'done' here">
+
+    <button id="unlockBtn" class="disabled" onclick="redirect()">🔓 Unlock</button>
+  </div>
+
+  <script>
+    let clickCount = 0;
+
+    function handleClick() {
+      clickCount++;
+      document.getElementById("clickCount").innerText = clickCount;
+      checkConditions();
+    }
+
+    document.getElementById("doneInput").addEventListener("input", checkConditions);
+
+    function checkConditions() {
+      const doneText = document.getElementById("doneInput").value.trim().toLowerCase();
+      const unlockBtn = document.getElementById("unlockBtn");
+
+      if (clickCount >= 10 && doneText === "done") {
+        unlockBtn.classList.remove("disabled");
+      } else {
+        unlockBtn.classList.add("disabled");
+      }
+    }
+
+    function redirect() {
+      if (!document.getElementById("unlockBtn").classList.contains("disabled")) {
+        window.location.href = "https://fossbytes.com/latest-free-robux-codes/";
+      }
+    }
+  </script>
+</body>
+</html>
