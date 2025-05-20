@@ -1,1 +1,139 @@
-Do you want Roblox Redeem Codes?
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Roblox Redeem Codes</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f2f2;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      flex-direction: column;
+      text-align: center;
+    }
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+    button {
+      padding: 12px 20px;
+      margin: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+    .yes-btn {
+      background-color: #ff4757;
+      color: white;
+    }
+    .no-btn {
+      background-color: #ced6e0;
+    }
+    .yes-btn:hover {
+      background-color: #e84118;
+    }
+    .countdown, .secret-input, .code-output {
+      margin-top: 20px;
+    }
+    input {
+      padding: 10px;
+      width: 80%;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    #copyBtn {
+      margin-top: 10px;
+      background-color: #2ed573;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="mainContent">
+    <h2>Do you want Roblox redeem codes?</h2>
+    <button class="yes-btn" onclick="startCountdown()">Yes</button>
+    <button class="no-btn" onclick="closeTab()">No</button>
+  </div>
+
+  <script>
+    function closeTab() {
+      window.open('', '_self', '');
+      window.close();
+    }
+
+    function startCountdown() {
+      const container = document.getElementById('mainContent');
+      container.innerHTML = `
+        <h2>Get ready for the code...</h2>
+        <div class="countdown">Time remaining: <span id="timer">30</span> seconds</div>
+      `;
+      let timeLeft = 30;
+      const countdown = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(countdown);
+          showSecretPrompt();
+        }
+      }, 1000);
+    }
+
+    function showSecretPrompt() {
+      const container = document.getElementById('mainContent');
+      container.innerHTML = `
+        <h2>Type the secret code to redeem</h2>
+        <div class="secret-input">
+          <input type="text" id="secretInput" placeholder="Enter secret code">
+          <br><br>
+          <button class="yes-btn" onclick="verifyCode()">Submit</button>
+        </div>
+      `;
+    }
+
+    function verifyCode() {
+      const input = document.getElementById('secretInput').value.trim().toLowerCase();
+      if (input === 'playcentrix') {
+        showRedeemCode();
+      } else {
+        alert('Incorrect code. Try again.');
+      }
+    }
+
+    function showRedeemCode() {
+      const container = document.getElementById('mainContent');
+      container.innerHTML = `
+        <h2>🎉 Redeem Code Unlocked!</h2>
+        <div class="code-output">
+          <p><strong>Your code is:</strong></p>
+          <input type="text" value="TWEETROBLOX" id="redeemCode" readonly>
+          <br>
+          <button id="copyBtn" onclick="copyCode()">📋 Copy Code</button>
+        </div>
+      `;
+    }
+
+    function copyCode() {
+      const codeInput = document.getElementById('redeemCode');
+      codeInput.select();
+      codeInput.setSelectionRange(0, 99999); // For mobile
+      navigator.clipboard.writeText(codeInput.value).then(() => {
+        alert("Code copied to clipboard!");
+      });
+    }
+  </script>
+</body>
+</html>
