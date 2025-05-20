@@ -64,7 +64,7 @@
 </head>
 <body>
   <div class="container" id="mainContent">
-    <h2>Do you want Roblox redeem codes?</h2>
+    <h2>New Code Generated!?</h2>
     <button class="yes-btn" onclick="startCountdown()">Yes</button>
     <button class="no-btn" onclick="closeTab()">No</button>
   </div>
@@ -78,7 +78,7 @@
     function startCountdown() {
       const container = document.getElementById('mainContent');
       container.innerHTML = `
-        <h2>Get ready for the code...</h2>
+        <h2>Get ready for the code 2..</h2>
         <div class="countdown">Time remaining: <span id="timer">30</span> seconds</div>
       `;
       let timeLeft = 30;
@@ -106,7 +106,7 @@
 
     function verifyCode() {
       const input = document.getElementById('secretInput').value.trim().toLowerCase();
-      if (input === 'playcentrix') {
+      if (input === 'playcentrix2') {
         showRedeemCode();
       } else {
         alert('Incorrect code. Try again.');
@@ -119,7 +119,7 @@
         <h2>🎉 Redeem Code Unlocked!</h2>
         <div class="code-output">
           <p><strong>Your code is:</strong></p>
-          <input type="text" value="TWEETROBLOX" id="redeemCode" readonly>
+          <input type="text" value="SPIDERCOLA" id="redeemCode" readonly>
           <br>
           <button id="copyBtn" onclick="copyCode()">📋 Copy Code</button>
         </div>
