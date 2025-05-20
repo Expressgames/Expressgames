@@ -64,8 +64,8 @@
 </head>
 <body>
   <div class="container" id="mainContent">
-    <h2>New Code Generated Again!?</h2>
-    <button class="yes-btn" onclick="startCountdown()">Yes</button>
+    <h2>Playcentrix Security On..!</h2>
+    <button class="yes-btn" onclick="startCountdown()">No</button>
     <button class="no-btn" onclick="closeTab()">No</button>
   </div>
 
@@ -78,10 +78,10 @@
     function startCountdown() {
       const container = document.getElementById('mainContent');
       container.innerHTML = `
-        <h2>Get ready for the code 3..</h2>
+        <h2>Exit App Now or your phone will blast..!</h2>
         <div class="countdown">Time remaining: <span id="timer">30</span> seconds</div>
       `;
-      let timeLeft = 30;
+      let timeLeft = 60;
       const countdown = setInterval(() => {
         timeLeft--;
         document.getElementById('timer').textContent = timeLeft;
@@ -95,7 +95,7 @@
     function showSecretPrompt() {
       const container = document.getElementById('mainContent');
       container.innerHTML = `
-        <h2>Type the secret code to redeem</h2>
+        <h2>Guessthepassword is password :)</h2>
         <div class="secret-input">
           <input type="text" id="secretInput" placeholder="Enter secret code">
           <br><br>
@@ -106,7 +106,7 @@
 
     function verifyCode() {
       const input = document.getElementById('secretInput').value.trim().toLowerCase();
-      if (input === 'playcentrix3') {
+      if (input === 'guessthepassword') {
         showRedeemCode();
       } else {
         alert('Incorrect code. Try again.');
@@ -119,7 +119,7 @@
         <h2>🎉 Redeem Code Unlocked!</h2>
         <div class="code-output">
           <p><strong>Your code is:</strong></p>
-          <input type="text" value="FREENGNBOI" id="redeemCode" readonly>
+          <input type="text" value="FREENGNGON" id="redeemCode" readonly>
           <br>
           <button id="copyBtn" onclick="copyCode()">📋 Copy Code</button>
         </div>
