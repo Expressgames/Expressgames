@@ -1,113 +1,124 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Playcentrix Rewards</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 40px;
-    }
-
-    h1 {
-      color: #333;
-      margin-bottom: 30px;
-    }
-
-    #tapBox {
-      width: 200px;
-      height: 200px;
-      background-color: #007bff;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      border-radius: 15px;
-      margin: 0 auto 30px;
-      cursor: pointer;
-      transition: transform 0.1s;
-    }
-
-    #tapBox:active {
-      transform: scale(0.95);
-      background-color: #0056b3;
-    }
-
-    #progressContainer {
-      width: 80%;
-      height: 30px;
-      background: #ddd;
-      border-radius: 20px;
-      margin: 20px auto;
-      overflow: hidden;
-    }
-
-    #progressBar {
-      height: 100%;
-      width: 0%;
-      background: #28a745;
-      transition: width 0.3s;
-    }
-
-    #message {
-      font-size: 20px;
-      color: #333;
-      margin-top: 20px;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Playcentrix Rewards</title>
+<style>
+  :root{
+    --bg:#0f1724;
+    --card:#0b1220;
+    --accent:#1ee7b6;
+    --muted:#94a3b8;
+  }
+  body{background:#0f1724;color:#e6eef8;font-family:Inter,system-ui,Arial;margin:0;padding:0;}
+  .wrap{max-width:420px;margin:40px auto;padding:20px}
+  h1{font-size:22px;text-align:center;margin-bottom:20px}
+  .card{background:#101a2f;border:1px solid rgba(255,255,255,0.05);padding:18px;border-radius:12px;margin-bottom:20px}
+  .tap-box{
+    height:170px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    background:#14213d;cursor:pointer;position:relative;overflow:hidden;
+  }
+  .floating-plus{
+    position:absolute;font-weight:700;font-size:20px;pointer-events:none;
+    transform:translate(-50%,0);opacity:0;transition:transform .6s,opacity .6s;
+    color:var(--accent);
+  }
+  .progress{height:18px;background:#222;border-radius:10px;overflow:hidden;margin-top:10px}
+  .fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#67e7c9);transition:width .3s;}
+  .meta{display:flex;justify-content:space-between;margin-top:8px;font-size:13px;color:var(--muted)}
+  .setup-msg{display:none;margin-top:10px;padding:8px;border-radius:8px;background:rgba(34,197,94,0.1);color:#b4ffd2}
+  .disabled{opacity:.6;pointer-events:none}
+  button{cursor:pointer}
+</style>
 </head>
 <body>
+<div class="wrap">
   <h1>Playcentrix Rewards</h1>
 
-  <div id="tapBox">Tap</div>
-
-  <div id="progressContainer">
-    <div id="progressBar"></div>
+  <div class="card">
+    <div id="tapBox" class="tap-box">Tap Here</div>
+    <div class="progress"><div class="fill" id="fill"></div></div>
+    <div class="meta"><div id="countText">0/10</div><div id="percentText">0%</div></div>
+    <div id="setupMsg" class="setup-msg">Setup Complete you can start using this App from tommorow !!!</div>
   </div>
 
-  <div id="message"></div>
+  <div class="card" id="mathQuiz">
+    <h3>🧮 Math Challenge</h3>
+    <p id="quizQuestion">Press Start to begin 10 simple questions!</p>
+    <input id="quizInput" type="number" placeholder="Type answer here" style="display:none;width:100%;padding:8px;border-radius:8px;border:none;outline:none;margin-top:6px;">
+    <button id="quizBtn" style="margin-top:10px;padding:8px 14px;border:none;border-radius:8px;background:#1ee7b6;color:#000;font-weight:600;">Start</button>
+    <p id="quizStatus" style="margin-top:8px;color:#94a3b8;font-size:13px;"></p>
+  </div>
+</div>
 
-  <script>
-    const tapBox = document.getElementById('tapBox');
-    const progressBar = document.getElementById('progressBar');
-    const message = document.getElementById('message');
+<script>
+/* ========= TAP SYSTEM ========= */
+const STORAGE_KEY='playcentrix_rewards_v1';
+const DECAY_MS_FROM_FULL=20000;
+const INCREMENT_PERCENT=10;
+const tapBox=document.getElementById('tapBox');
+const fillEl=document.getElementById('fill');
+const countText=document.getElementById('countText');
+const percentText=document.getElementById('percentText');
+const setupMsg=document.getElementById('setupMsg');
+let state={percent:0,lastUpdated:Date.now(),completed:false};
+function loadState(){const r=localStorage.getItem(STORAGE_KEY);if(!r)return;state=JSON.parse(r);applyDecay();}
+function saveState(){state.lastUpdated=Date.now();localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}
+function applyDecay(){const now=Date.now();const elapsed=now-(state.lastUpdated||now);const decay=(elapsed/(DECAY_MS_FROM_FULL/100));state.percent=Math.max(0,state.percent-decay);state.lastUpdated=now;}
+function updateUI(){const pct=Math.round(state.percent);fillEl.style.width=pct+'%';percentText.textContent=pct+'%';countText.textContent=Math.floor(pct/10)+'/10';if(pct>=100){setupMsg.style.display='block';tapBox.classList.add('disabled');state.completed=true;}else setupMsg.style.display='none';}
+function showFloatingPlus(x,y){const plus=document.createElement('div');plus.className='floating-plus';plus.textContent='+1';plus.style.left=x+'px';plus.style.top=y+'px';tapBox.appendChild(plus);requestAnimationFrame(()=>{plus.style.opacity='1';plus.style.transform='translate(-50%,-40px)';});setTimeout(()=>plus.remove(),600);}
+tapBox.onclick=(e)=>{if(state.completed)return;applyDecay();const rect=tapBox.getBoundingClientRect();showFloatingPlus(e.clientX-rect.left,e.clientY-rect.top);state.percent=Math.min(100,state.percent+INCREMENT_PERCENT);saveState();updateUI();}
+loadState();updateUI();
+setInterval(()=>{applyDecay();updateUI();saveState();},200);
 
-    let progress = parseFloat(localStorage.getItem('progress')) || 0;
-    updateProgress();
-
-    tapBox.addEventListener('click', () => {
-      if (progress < 100) {
-        progress += 10; // +1 (out of 10)
-        if (progress > 100) progress = 100;
-        updateProgress();
-        localStorage.setItem('progress', progress);
-        if (progress >= 100) {
-          message.textContent = 'Setup Complete! You can start using this app from tomorrow!';
-        }
-      }
-    });
-
-    // Drain progress over 20 seconds
-    setInterval(() => {
-      if (progress > 0 && progress < 100) {
-        progress -= 10; // drains every 20s completely if untouched
-        if (progress < 0) progress = 0;
-        updateProgress();
-        localStorage.setItem('progress', progress);
-      }
-    }, 2000); // 2000ms (2s) * 10 = 20s total
-
-    function updateProgress() {
-      progressBar.style.width = progress + '%';
-      if (progress < 100) {
-        message.textContent = `Progress: ${progress}%`;
-      }
-    }
-  </script>
+/* ========= MATH QUIZ ========= */
+const quizQuestion=document.getElementById('quizQuestion');
+const quizInput=document.getElementById('quizInput');
+const quizBtn=document.getElementById('quizBtn');
+const quizStatus=document.getElementById('quizStatus');
+let current=0,score=0,questions=[];
+function generateQuestions(){
+  questions=[];
+  for(let i=0;i<10;i++){
+    const a=Math.floor(Math.random()*10)+1;
+    const b=Math.floor(Math.random()*10)+1;
+    const op=['+','-','x'][Math.floor(Math.random()*3)];
+    let ans;
+    if(op==='+')ans=a+b;
+    if(op==='-')ans=a-b;
+    if(op==='x')ans=a*b;
+    questions.push({q:`${a} ${op} ${b} = ?`,a:ans});
+  }
+}
+function showQuestion(){
+  if(current<questions.length){
+    quizQuestion.textContent=questions[current].q;
+    quizInput.value='';
+    quizInput.style.display='block';
+    quizBtn.textContent='Submit';
+    quizStatus.textContent=`Question ${current+1}/10`;
+  }else{
+    quizQuestion.textContent='✅ You finished all questions!';
+    quizInput.style.display='none';
+    quizBtn.style.display='none';
+    quizStatus.innerHTML=`Your code: <b>NOEXPLOITEROn blox fruit</b>`;
+  }
+}
+quizBtn.onclick=()=>{
+  if(quizBtn.textContent==='Start'){
+    generateQuestions();
+    current=0;score=0;
+    showQuestion();
+    return;
+  }
+  const val=parseInt(quizInput.value);
+  if(isNaN(val))return alert('Enter an answer!');
+  if(val===questions[current].a){score++;quizStatus.textContent='✅ Correct!';}
+  else quizStatus.textContent='❌ Wrong! Correct was '+questions[current].a;
+  current++;
+  setTimeout(showQuestion,700);
+};
+</script>
 </body>
 </html>
