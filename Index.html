@@ -2,89 +2,110 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Unlock Free Robux Code</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playcentrix Rewards</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f0f0f0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      font-family: Arial, sans-serif;
       text-align: center;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 40px;
     }
-    .container {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      width: 90%;
-      max-width: 400px;
+
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
     }
-    button, input {
-      margin-top: 15px;
-      padding: 12px 20px;
-      font-size: 16px;
-      border-radius: 6px;
-      border: none;
-      outline: none;
-    }
-    #clickBtn {
-      background-color: #3498db;
+
+    #tapBox {
+      width: 200px;
+      height: 200px;
+      background-color: #007bff;
       color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      border-radius: 15px;
+      margin: 0 auto 30px;
+      cursor: pointer;
+      transition: transform 0.1s;
     }
-    #unlockBtn {
-      background-color: #2ecc71;
-      color: white;
+
+    #tapBox:active {
+      transform: scale(0.95);
+      background-color: #0056b3;
     }
-    input {
-      width: 100%;
-      border: 1px solid #ccc;
+
+    #progressContainer {
+      width: 80%;
+      height: 30px;
+      background: #ddd;
+      border-radius: 20px;
+      margin: 20px auto;
+      overflow: hidden;
     }
-    .disabled {
-      opacity: 0.5;
-      pointer-events: none;
+
+    #progressBar {
+      height: 100%;
+      width: 0%;
+      background: #28a745;
+      transition: width 0.3s;
+    }
+
+    #message {
+      font-size: 20px;
+      color: #333;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Roblox Khul Jayega</h2>
-    <p>Step 1: Click the button 10 times</p>
-    <button id="clickBtn" onclick="handleClick()">Click Here (<span id="clickCount">0</span>/10)</button>
+  <h1>Playcentrix Rewards</h1>
 
-    <p>Step 2: Type <strong>done</strong> below when finished</p>
-    <input type="text" id="doneInput" placeholder="Type 'done' here">
+  <div id="tapBox">Tap</div>
 
-    <button id="unlockBtn" class="disabled" onclick="redirect()">🔓 Unlock</button>
+  <div id="progressContainer">
+    <div id="progressBar"></div>
   </div>
 
+  <div id="message"></div>
+
   <script>
-    let clickCount = 0;
+    const tapBox = document.getElementById('tapBox');
+    const progressBar = document.getElementById('progressBar');
+    const message = document.getElementById('message');
 
-    function handleClick() {
-      clickCount++;
-      document.getElementById("clickCount").innerText = clickCount;
-      checkConditions();
-    }
+    let progress = parseFloat(localStorage.getItem('progress')) || 0;
+    updateProgress();
 
-    document.getElementById("doneInput").addEventListener("input", checkConditions);
-
-    function checkConditions() {
-      const doneText = document.getElementById("doneInput").value.trim().toLowerCase();
-      const unlockBtn = document.getElementById("unlockBtn");
-
-      if (clickCount >= 10 && doneText === "done") {
-        unlockBtn.classList.remove("disabled");
-      } else {
-        unlockBtn.classList.add("disabled");
+    tapBox.addEventListener('click', () => {
+      if (progress < 100) {
+        progress += 10; // +1 (out of 10)
+        if (progress > 100) progress = 100;
+        updateProgress();
+        localStorage.setItem('progress', progress);
+        if (progress >= 100) {
+          message.textContent = 'Setup Complete! You can start using this app from tomorrow!';
+        }
       }
-    }
+    });
 
-    function redirect() {
-      if (!document.getElementById("unlockBtn").classList.contains("disabled")) {
-        window.location.href = "https://roblox.com/";
+    // Drain progress over 20 seconds
+    setInterval(() => {
+      if (progress > 0 && progress < 100) {
+        progress -= 10; // drains every 20s completely if untouched
+        if (progress < 0) progress = 0;
+        updateProgress();
+        localStorage.setItem('progress', progress);
+      }
+    }, 2000); // 2000ms (2s) * 10 = 20s total
+
+    function updateProgress() {
+      progressBar.style.width = progress + '%';
+      if (progress < 100) {
+        message.textContent = `Progress: ${progress}%`;
       }
     }
   </script>
